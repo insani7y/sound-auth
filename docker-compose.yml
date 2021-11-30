@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  frontend:
+    container_name: sound_auth_frontend
+    ports:
+      - "3000:3000"
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    command: npm start
+    volumes:
+      - build:/frontend/build/
+
+  python-backend:
+    container_name: sound_auth_python_backend
+    build:
+      context: ./python-backend
+      dockerfile: Dockerfile
+    command: uvicorn --host 0.0.0.0 --port 8000 app.main:app
+
+  db:
+    container_name: sound_auth_db
+    ports:
+      - "5432:5432"
+    image: postgres:latest
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_db=postgres
+
+  nginx:
+    container_name: sound_auth_nginx
+    build: ./nginx
+    ports:
+      - "8000:80"
+    depends_on:
+      - python-backend
+      - golang-backend
+
+  golang-backend:
+    container_name: sound_auth_golang_backend
+    build:
+      context: ./go-backend
+      dockerfile: Dockerfile
+    command: bash -c "/usr/bin/supervisord"
+    volumes:
+      - ./go-backend/supervisor/supervisor.conf:/etc/supervisor/conf.d/supervisord.conf:ro
+    depends_on:
+      - db
+
+volumes:
+  pg_data:
+  build:

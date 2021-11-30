@@ -1,0 +1,9 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/reqww/ts-react-sound-auth
+[submodule "python-backend"]
+	path = python-backend
+	url = https://github.com/reqww/fast-api-mfcc
+[submodule "go-backend"]
+	path = go-backend
+	url = https://github.com/reqww/go-grpc-sound-auth
