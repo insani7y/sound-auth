@@ -3,14 +3,11 @@ version: "3.9"
 services:
   frontend:
     container_name: sound_auth_frontend
-    ports:
-      - "3000:3000"
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    command: npm start
     volumes:
-      - build:/frontend/build/
+      - frontend_build:/app/build
 
   python-backend:
     container_name: sound_auth_python_backend
@@ -39,6 +36,9 @@ services:
     depends_on:
       - python-backend
       - golang-backend
+      - frontend
+    volumes:
+      - frontend_build:/etc/nginx/html
 
   golang-backend:
     container_name: sound_auth_golang_backend
@@ -53,4 +53,4 @@ services:
 
 volumes:
   pg_data:
-  build:
+  frontend_build:
